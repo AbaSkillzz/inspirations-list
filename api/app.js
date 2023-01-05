@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose")
-require("dotenv/config"); 
+require("dotenv").config({path: "../.env"});
 const InspirationModel = require("./models/Inspiration");
 const bodyParser = require("body-parser");
 const Inspiration = require("./models/Inspiration");
@@ -23,14 +23,11 @@ mongoose.connect(connection)
 
 //middleware: esegue function quando client va su un route
 app.use(bodyParser.json()); //middleware che viene eseguito ad ogni request, aiuta a lavorare con json
-app.use(express.static("frontend"));
 
 //routes 
 app.get("/", function(req, res){
    console.log("GET request for /");
-   const indexFileLocation = path.resolve("./frontend/index.html");
-   //res.sendFile(indexFileLocation);
-   res.send("ciao, no midlleware");
+   res.send("API to retrieve your inspirations, go to /inpirations for the list");
 });
 
 app.get("/inspirations", async function(req, res){
@@ -109,6 +106,6 @@ app.patch("/inspirations/:id", (req, res) => {
 
 
 //server start
-app.listen(3000, function(){
+app.listen(process.env.API_PORT, function(){
    console.log("Server is running!");
 });
