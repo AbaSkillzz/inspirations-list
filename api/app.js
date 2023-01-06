@@ -5,14 +5,18 @@ const InspirationModel = require("./models/Inspiration");
 const bodyParser = require("body-parser");
 const Inspiration = require("./models/Inspiration");
 const path = require("path");
+const cors = require("cors");
 
 const app = express();
+
+//middleware: esegue function quando client va su un route
+app.use(cors()); //to enable access to external domains clients
+app.use(bodyParser.json()); //middleware che viene eseguito ad ogni request, aiuta a lavorare con json
 
 //DB connection
 mongoose.set('strictQuery', false);
 
 const connection = process.env.DB_CONNECTION;
-
 mongoose.connect(connection)
    .then((res) => {
       console.log("Promise resolved, connected to db!");
@@ -20,9 +24,6 @@ mongoose.connect(connection)
    .catch((err) => {
       console.log("Error in db connection: ", err);
    })
-
-//middleware: esegue function quando client va su un route
-app.use(bodyParser.json()); //middleware che viene eseguito ad ogni request, aiuta a lavorare con json
 
 //routes 
 app.get("/", function(req, res){
