@@ -5,13 +5,21 @@
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>My Inspiration List</title>
+      <link rel="stylesheet" href="/static/index.css">
    </head>
    <body>
+      <h1 id="title">My inspirations</h1>
       <button id="list-inspirations-btn">List my inspirations</button>
-      
+      <button id="delete-inspiration-btn">Delete inspiration</button>
+      <button id="update-inpiration-btn">Update inspiration</button>
+      <button id="add-inpiration-btn">Add inspiration</button>
+
       <div id="list">
-         <h1>My inspirations</h1>
       </div>
+
+      <form method="POST" action="http://localhost:8000/inspirations/">
+            PENSANDO COME MANDARE ID
+      </form>
    
       <script src="/static/index.js"></script>
    </body>
