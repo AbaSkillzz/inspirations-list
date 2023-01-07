@@ -105,6 +105,12 @@ app.patch("/inspirations/:id", (req, res) => {
    });
 });   
 
+//TEST
+app.post("/test", (req, res) => {
+   console.log(req.body);
+   res.send("test");
+});
+
 
 //server start
 app.listen(process.env.API_PORT, function(){
