@@ -8,7 +8,7 @@ app.use("/static", express.static("./public"));
 
 //ROUTES
 app.get("/", (req, res) => {
-   res.sendFile(path.resolve("../frontend/index.html"));
+   res.sendFile(path.resolve("./frontend/index.html"));
 });
 
 

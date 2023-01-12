@@ -47,7 +47,7 @@ app.get("/inspirations", async function(req, res){
 
 app.post("/inspirations", async function(req, res){
    console.log("POST request for /inspirations");
-
+   console.log(req.body)
    const newInspiration = new InspirationModel({
       name: req.body.name,
       description: req.body.description,
@@ -57,7 +57,7 @@ app.post("/inspirations", async function(req, res){
    newInspiration.save()
       .then((data) => {
          console.log("Successully stored new inspiration(promise resolved)");
-         res.send(`Stored: ${data}.`);
+         res.send(`Successfulyl stored new inspiration, values: ${data}.`);
       })
       .catch((err) => {
          console.log("Error saving new inspiration(promise rejected): ", err);
@@ -80,6 +80,7 @@ app.get("/inspirations/:id", (req, res) => {
 
 //delete a specific inspiration 
 app.delete("/inspirations/:id", async (req, res) => {
+   console.log("DELETE request for /inpirations/:id");
    try{
       const deletedInspiration = await InspirationModel.deleteOne({"_id": req.params.id});
       if(deletedInspiration.deletedCount == 0){
@@ -93,23 +94,32 @@ app.delete("/inspirations/:id", async (req, res) => {
 });
 
 //update an inpiration
-app.patch("/inspirations/:id", (req, res) => {
+app.patch("/inspirations/:id", async (req, res) => {
+   console.log("PATCH request for /inpirations/:id");
+   console.log(req.body)
+   /*try{
+      const updatedInspiration = await InspirationModel.updateOne({"_id": req.params.id}, 
+         {$set: {"description": req.body.description}}
+      );
+      if(updatedInspiration.modifiedCount == 0){
+         res.send("No error occured, but No document has been modified from the db (count=0)!");
+      }else{
+         res.send(`Successfully updated inspiration ${req.params.id}, count: ${updatedInspiration.modifiedCount}.`);
+      }
+   }catch(err){
+      res.send(err);
+   }*/
    InspirationModel.updateOne({"_id": req.params.id}, 
       {$set: {"description": req.body.description}}
    )
    .then((data) => {
+      console.log(data);
       res.send("Successfully updated inspiration");
    })
    .catch((err) => {
       res.send(`Error occured updating your inspiration: ${err}`);
    });
 });   
-
-//TEST
-app.post("/test", (req, res) => {
-   console.log(req.body);
-   res.send("test");
-});
 
 
 //server start

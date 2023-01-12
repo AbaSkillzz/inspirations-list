@@ -1,6 +1,14 @@
 function clearEveryTime(){
    document.getElementById("list").innerHTML = ""; //clear eventual previous content
-   const form = document.getElementById("form-for-api").hidden = true;
+   const deleteForm = document.getElementById("delete-form-for-api");
+   deleteForm.hidden = true;
+   deleteForm.reset(); //clear previous data in form fields
+   const addForm = document.getElementById("add-form-for-api")
+   addForm.hidden = true;
+   addForm.reset(); 
+   const updateForm = document.getElementById("update-form-for-api");
+   updateForm.hidden = true;
+   updateForm.reset();
 }
 
 //LIST INSPIRATION BUTTON
@@ -70,7 +78,7 @@ document.getElementById("list-inspirations-btn").addEventListener("click", () =>
 document.getElementById("delete-inspiration-btn").addEventListener("click", () => {
    clearEveryTime();
    //show the form
-   const form = document.getElementById("form-for-api");
+   const form = document.getElementById("delete-form-for-api");
    form.hidden = false;
    
    form.addEventListener("submit", (event) => {
@@ -96,5 +104,73 @@ document.getElementById("delete-inspiration-btn").addEventListener("click", () =
 
 //ADD NEW INSPIRATION
 document.getElementById("add-inspiration-btn").addEventListener("click", () => {
+   clearEveryTime();
 
+   const form = document.getElementById("add-form-for-api");
+   form.hidden = false;
+
+   form.addEventListener("submit", (event) => {
+      event.preventDefault(); 
+      sendData();
+   });
+
+   function sendData(){
+      const name = document.getElementById("add-name").value;
+      const description = document.getElementById("add-description").value;
+      const influenceField = document.getElementById("add-influenceField").value;
+
+      const obj = {
+         "name": name,
+         "description": description,
+         "influenceField": influenceField
+      }
+      const json = JSON.stringify(obj);
+      //request to api
+      const xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function(){
+         if(this.status==200 && this.readyState==4){
+            console.log(`Response received, ${this.response}`);
+         }
+      }
+      xhttp.open("POST", "http://localhost:8000/inspirations", true);
+      xhttp.setRequestHeader("Content-type", "application/json");
+      xhttp.send(json);
+   }
+});
+
+
+//UPDATE AN INSPIRATION
+document.getElementById("update-inspiration-btn").addEventListener("click", () => {
+   clearEveryTime();
+   
+   const form = document.getElementById("update-form-for-api");
+   form.hidden = false;
+
+   //wait for submit event
+   form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      sendData();
+   });
+
+   function sendData(){
+      const id = document.getElementById("update-id").value;
+      const description = document.getElementById("update-description").value;
+      //convert to json to send 
+      const obj = {
+         "description": description
+      }
+      const json = JSON.stringify(obj);
+      console.log(json)
+
+      //ajax request 
+      const xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function(){
+         if(this.status==200 && this.readyState==4){
+            console.log(`Response received, ${this.response}`);
+            alert(this.responseText);
+         }
+      }
+      xhttp.open("PATCH",`http://localhost:8000/inspirations/${id}`, true);
+      xhttp.send(json);
+   }
 });

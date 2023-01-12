@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>My Inspiration List</title>
+      <link rel="stylesheet" href="/static/index.css">
+   </head>
+   <body>
+      <h1 id="title">My inspirations</h1>
+      <button id="list-inspirations-btn">List my inspirations</button>
+      <button id="delete-inspiration-btn">Delete inspiration</button>
+      <button id="add-inspiration-btn">Add inspiration</button>
+      <button id="update-inspiration-btn">Update inspiration</button>
+
+      <div id="list">
+      </div>
+
+      <form id="update-form-for-api" hidden=true>
+         <label for="update-id">Id of the inspiration to update: </label>
+         <input type="text" id="update-id">
+         <label for="update-description">Updated description: </label>
+         <input type="text" id="update-description"> <br>
+         <input type="submit" value="Update">
+      </form>
+
+      <form id="delete-form-for-api" hidden=true>
+         <label for="delete-id">Id of the inspiration to delete: </label>
+         <input type="text" id="delete-id">
+         <input type="submit" value="Submit">
+      </form>
+
+      <form id="add-form-for-api" hidden=true>
+         <label for="name">Name: </lable>
+         <input type="text" id="add-name"> 
+         <label for="description">Description </lable>
+         <input type="text" id="add-description"> 
+         <label for="influenceField">Field of influence: </lable>
+         <input type="text" id="add-influenceField"> <br>
+         <input type="submit" value="Add">
+      </form>
+      
+   
+      <script src="/static/index.js"></script>
+   </body>
+</html>
