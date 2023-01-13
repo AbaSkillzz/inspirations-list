@@ -6,6 +6,9 @@ const bodyParser = require("body-parser");
 const Inspiration = require("./models/Inspiration");
 const path = require("path");
 const cors = require("cors");
+const cloudinary = require("cloudinary");
+const multer = require("multer");
+const cloudinaryStorage = require("multer-storage-cloudinary");
 
 const app = express();
 
@@ -23,7 +26,23 @@ mongoose.connect(connection)
    })
    .catch((err) => {
       console.log("Error in db connection: ", err);
-   })
+   });
+
+//settings to receive and process images(images part)
+cloudinary.config({
+   cloud_name: process.env.CLOUD_NAME,
+   api_key: process.env.API_KEY,
+   api_secret: process.env.API_SECRET
+});
+
+const storage = cloudinaryStorage({
+   cloudinary: cloudinary,
+   folder: "images",
+   transformation: [{ width: 500, height: 500, crop: "limit" }]
+});
+//middleware to get the imageFile from frontend and send it to cloudinary
+const parser = multer({storage: storage});
+
 
 //routes 
 app.get("/", function(req, res){
@@ -44,10 +63,11 @@ app.get("/inspirations", async function(req, res){
       res.send("Error in retrieving inspiration list from database: ", err);
    });
 });   
-
-app.post("/inspirations", async function(req, res){
+//add new inspiration
+app.post("/inspirations", parser.single("image"), async function(req, res){
    console.log("POST request for /inspirations");
    console.log(req.body)
+
    const newInspiration = new InspirationModel({
       name: req.body.name,
       description: req.body.description,
@@ -83,32 +103,18 @@ app.delete("/inspirations/:id", async (req, res) => {
    console.log("DELETE request for /inpirations/:id");
    try{
       const deletedInspiration = await InspirationModel.deleteOne({"_id": req.params.id});
-      if(deletedInspiration.deletedCount == 0){
-         res.send("No error occured, but No document has been deleted from the db (count=0)!");
-      }else{
-         res.send(`Successfully deleted inspiration ${req.params.id}, count: ${deletedInspiration.deletedCount}.`);
-      }
+      res.send(`Successfully deleted inspiration ${req.params.id}, count: ${deletedInspiration.deletedCount}.`);
+      
    }catch(err){
       res.send(err);
    }
 });
 
 //update an inpiration
-app.patch("/inspirations/:id", async (req, res) => {
-   console.log("PATCH request for /inpirations/:id");
+app.patch("/inspirations/:id", (req, res) => {
+   console.log("PATCH request for /inspirations/:id");
    console.log(req.body)
-   /*try{
-      const updatedInspiration = await InspirationModel.updateOne({"_id": req.params.id}, 
-         {$set: {"description": req.body.description}}
-      );
-      if(updatedInspiration.modifiedCount == 0){
-         res.send("No error occured, but No document has been modified from the db (count=0)!");
-      }else{
-         res.send(`Successfully updated inspiration ${req.params.id}, count: ${updatedInspiration.modifiedCount}.`);
-      }
-   }catch(err){
-      res.send(err);
-   }*/
+
    InspirationModel.updateOne({"_id": req.params.id}, 
       {$set: {"description": req.body.description}}
    )

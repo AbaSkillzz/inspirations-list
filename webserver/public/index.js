@@ -87,12 +87,12 @@ document.getElementById("delete-inspiration-btn").addEventListener("click", () =
    });
 
    function sendId(){
-      const id = document.getElementById("id").value;
+      const id = document.getElementById("delete-id").value;
       //send the id to the api
       const xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function onServerResponse(){ 
          if(this.status==200 && this.readyState==4){
-            console.log("OK response from server");
+            console.log("OK response from server, deleted inspiration.");
             alert(this.response);
          }
       }
@@ -118,18 +118,23 @@ document.getElementById("add-inspiration-btn").addEventListener("click", () => {
       const name = document.getElementById("add-name").value;
       const description = document.getElementById("add-description").value;
       const influenceField = document.getElementById("add-influenceField").value;
+      const imageFile = document.getElementById("add-image").files[0];
 
       const obj = {
          "name": name,
          "description": description,
-         "influenceField": influenceField
+         "influenceField": influenceField,
+         "image": imageFile
       }
       const json = JSON.stringify(obj);
+
       //request to api
       const xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function(){
          if(this.status==200 && this.readyState==4){
-            console.log(`Response received, ${this.response}`);
+            const response = this.responseText;
+            alert(response);
+            console.log(`Response received, ${response}`);
          }
       }
       xhttp.open("POST", "http://localhost:8000/inspirations", true);
@@ -160,7 +165,6 @@ document.getElementById("update-inspiration-btn").addEventListener("click", () =
          "description": description
       }
       const json = JSON.stringify(obj);
-      console.log(json)
 
       //ajax request 
       const xhttp = new XMLHttpRequest();
@@ -171,6 +175,7 @@ document.getElementById("update-inspiration-btn").addEventListener("click", () =
          }
       }
       xhttp.open("PATCH",`http://localhost:8000/inspirations/${id}`, true);
+      xhttp.setRequestHeader("Content-type", "application/json"); //to let server know that is receiving json
       xhttp.send(json);
    }
 });
