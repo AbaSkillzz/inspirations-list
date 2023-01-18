@@ -118,16 +118,14 @@ document.getElementById("add-inspiration-btn").addEventListener("click", () => {
       const name = document.getElementById("add-name").value;
       const description = document.getElementById("add-description").value;
       const influenceField = document.getElementById("add-influenceField").value;
+      //image 
       const imageFile = document.getElementById("add-image").files[0];
-
-      const obj = {
-         "name": name,
-         "description": description,
-         "influenceField": influenceField,
-         "image": imageFile
-      }
-      const json = JSON.stringify(obj);
-
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("influenceField", influenceField);
+      formData.append("image", imageFile);
+      console.log(formData)
       //request to api
       const xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function(){
@@ -138,8 +136,8 @@ document.getElementById("add-inspiration-btn").addEventListener("click", () => {
          }
       }
       xhttp.open("POST", "http://localhost:8000/inspirations", true);
-      xhttp.setRequestHeader("Content-type", "application/json");
-      xhttp.send(json);
+      //xhttp.setRequestHeader("Content-type", "multipart/form-data");
+      xhttp.send(formData);
    }
 });
 

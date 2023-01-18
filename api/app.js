@@ -8,7 +8,7 @@ const path = require("path");
 const cors = require("cors");
 const cloudinary = require("cloudinary");
 const multer = require("multer");
-const cloudinaryStorage = require("multer-storage-cloudinary");
+const {CloudinaryStorage} = require("multer-storage-cloudinary");
 
 const app = express();
 
@@ -35,14 +35,14 @@ cloudinary.config({
    api_secret: process.env.API_SECRET
 });
 
-const storage = cloudinaryStorage({
+const storage = new CloudinaryStorage({
    cloudinary: cloudinary,
    folder: "images",
    transformation: [{ width: 500, height: 500, crop: "limit" }]
 });
-//middleware to get the imageFile from frontend and send it to cloudinary
-const parser = multer({storage: storage});
 
+//const upload = multer({dest: "../webserver/images/"});
+const upload = multer({storage: storage});
 
 //routes 
 app.get("/", function(req, res){
@@ -63,10 +63,13 @@ app.get("/inspirations", async function(req, res){
       res.send("Error in retrieving inspiration list from database: ", err);
    });
 });   
+
 //add new inspiration
-app.post("/inspirations", parser.single("image"), async function(req, res){
+//the upload(multer) middleware madds body and file obj to reqest
+app.post("/inspirations", upload.single("image"), async function(req, res){
    console.log("POST request for /inspirations");
-   console.log(req.body)
+   
+   console.log(req.file);
 
    const newInspiration = new InspirationModel({
       name: req.body.name,
