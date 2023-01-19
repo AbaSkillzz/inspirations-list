@@ -125,7 +125,7 @@ document.getElementById("add-inspiration-btn").addEventListener("click", () => {
       formData.append("description", description);
       formData.append("influenceField", influenceField);
       formData.append("image", imageFile);
-      console.log(formData)
+      
       //request to api
       const xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function(){

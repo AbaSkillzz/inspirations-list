@@ -6,9 +6,10 @@ const bodyParser = require("body-parser");
 const Inspiration = require("./models/Inspiration");
 const path = require("path");
 const cors = require("cors");
-const cloudinary = require("cloudinary");
+const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
-const {CloudinaryStorage} = require("multer-storage-cloudinary");
+const DatauriParser = require("datauri/parser");
+
 
 const app = express();
 
@@ -28,23 +29,20 @@ mongoose.connect(connection)
       console.log("Error in db connection: ", err);
    });
 
-//settings to receive and process images(images part)
+//FOR IMAGE UPLOADING
 cloudinary.config({
    cloud_name: process.env.CLOUD_NAME,
    api_key: process.env.API_KEY,
-   api_secret: process.env.API_SECRET
+   api_secret: process.env.API_SECRET,
 });
-
-const storage = new CloudinaryStorage({
-   cloudinary: cloudinary,
-   folder: "images",
-   transformation: [{ width: 500, height: 500, crop: "limit" }]
-});
-
-//const upload = multer({dest: "../webserver/images/"});
+//multer config
+const storage = multer.memoryStorage(); //image saved in memory(bcs if hosted on remote server, may not have privileges to write files)
 const upload = multer({storage: storage});
+//datauri, to convert image buffer to string
+const datauriParser = new DatauriParser();
 
-//routes 
+
+//ROUTES
 app.get("/", function(req, res){
    console.log("GET request for /");
    res.send("API to retrieve your inspirations, go to /inpirations for the list");
@@ -68,9 +66,22 @@ app.get("/inspirations", async function(req, res){
 //the upload(multer) middleware madds body and file obj to reqest
 app.post("/inspirations", upload.single("image"), async function(req, res){
    console.log("POST request for /inspirations");
-   
-   console.log(req.file);
 
+   //send image to cloudinary
+   // -convert image buffer to uri
+   const uri = datauriParser.format(path.extname(req.file.originalname).toString(), req.file.buffer);
+   
+   // -upload uri to cloudinary
+   cloudinary.uploader.upload(uri.content, (err, result) => {
+      if(err){
+         console.log(`Error occured while uploading image: ${err}`);
+         res.send(`Error occured while uploading image: ${err}`)
+      }else{
+         console.log(`Successfully uploaded image, image url: ${result.url}`);
+         res.json({"image-url": result.url});
+      }
+   });
+   
    const newInspiration = new InspirationModel({
       name: req.body.name,
       description: req.body.description,
@@ -80,7 +91,7 @@ app.post("/inspirations", upload.single("image"), async function(req, res){
    newInspiration.save()
       .then((data) => {
          console.log("Successully stored new inspiration(promise resolved)");
-         res.send(`Successfulyl stored new inspiration, values: ${data}.`);
+         res.send(`Successfulyl stored new inspiration, values: ${data}`);
       })
       .catch((err) => {
          console.log("Error saving new inspiration(promise rejected): ", err);
