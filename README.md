@@ -5,7 +5,7 @@
 ![image that shows the webapp](./readme-images/webapp-showing.png)
 
 ## Backend
-Architecture of the web app: 1 server to serve/render the frontend, 1 server for the api
+Architecture of the web app: 1 server to serve/render the frontend, 1 server for the api, then the frontend communicates with the api using AJAX.
 
 ### api requests view, and stuff that happens
 ![api terminal image](./readme-images/api-view.png)
