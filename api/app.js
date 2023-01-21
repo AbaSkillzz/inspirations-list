@@ -67,31 +67,46 @@ app.get("/inspirations", async function(req, res){
 app.post("/inspirations", upload.single("image"), async function(req, res){
    console.log("POST request for /inspirations");
 
+   const response = {
+      "success-message": null,
+      "image-url": null
+   }
+
+   let imageUrl; //for saving in db
    //send image to cloudinary
    // -convert image buffer to uri
    const uri = datauriParser.format(path.extname(req.file.originalname).toString(), req.file.buffer);
-   
    // -upload uri to cloudinary
-   cloudinary.uploader.upload(uri.content, (err, result) => {
+   const imageOptions = {
+      width: 300,
+      height: 300,
+      crop: "limit"
+   }
+   await cloudinary.uploader.upload(uri.content, imageOptions, (err, result) => {
       if(err){
          console.log(`Error occured while uploading image: ${err}`);
-         res.send(`Error occured while uploading image: ${err}`)
+         response["image-url"] = `Error occured while uploading image: ${err}`;
       }else{
          console.log(`Successfully uploaded image, image url: ${result.url}`);
-         res.json({"image-url": result.url});
+         //res.json({"image-url": result.url});
+         response["image-url"] = result.url;
+         imageUrl = result.url; //for saving in db
       }
    });
    
    const newInspiration = new InspirationModel({
       name: req.body.name,
       description: req.body.description,
-      influenceField: req.body.influenceField
+      influenceField: req.body.influenceField,
+      image: imageUrl
    });
    //save to db(returns promise)
    newInspiration.save()
       .then((data) => {
          console.log("Successully stored new inspiration(promise resolved)");
-         res.send(`Successfulyl stored new inspiration, values: ${data}`);
+         //res.send(`Successfulyl stored new inspiration, values: ${data}`);
+         response["success-message"] = `Successfulyl stored new inspiration, values: ${data}`;
+         res.send(response);
       })
       .catch((err) => {
          console.log("Error saving new inspiration(promise rejected): ", err);

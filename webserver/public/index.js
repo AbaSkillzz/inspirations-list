@@ -41,6 +41,13 @@ document.getElementById("list-inspirations-btn").addEventListener("click", () =>
             div.appendChild(p)
             newDiv.appendChild(div); // add inner things to single inspiration's div
 
+            //image
+            div = document.createElement("div");
+            let image = document.createElement("img");
+            image.src = response[i].image;
+            div.appendChild(image);
+            newDiv.appendChild(div);
+
             div = document.createElement("div");
             let h3 = document.createElement("h3");
             h3.style.display = "inline";
@@ -133,6 +140,7 @@ document.getElementById("add-inspiration-btn").addEventListener("click", () => {
             const response = this.responseText;
             alert(response);
             console.log(`Response received, ${response}`);
+
          }
       }
       xhttp.open("POST", "http://localhost:8000/inspirations", true);

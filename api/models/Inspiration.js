@@ -11,8 +11,12 @@ const inspirationSchema = mongoose.Schema({
    },
    influenceField: {
       type: String,
-      require: false,
+      required: false,
       default: "self improvement"
+   },
+   image: {
+      type: String,
+      required: false,
    }
 });
 
